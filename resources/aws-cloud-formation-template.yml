@@ -33,7 +33,9 @@ Resources:
           yum install -y python3 python3-pip
           pip3 install Flask==2.3.3
           pip3 install flask_mysql
-          nohup python3 /var/www/html/app-with-mysql.py --host 0.0.0.0 --port 8080 &
+          pip3 install Flask-SQLAlchemy
+          pip3 install PyMySQL
+          nohup python3 /var/www/html/aws_demo_rds_via_flask/app-with-mysql.py --host 0.0.0.0 --port 8080 &
           echo "Web service setup complete. Application running on port 8080." 
 
 
@@ -59,6 +61,39 @@ Resources:
       Tags: 
         - Key: Name
           Value: myEmaildatabaseEc2SecGroup
+
+  RDFAppInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement: 
+          - Effect: Allow
+            Principal:
+              Service: 
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Policies:
+        - PolicyName: EmailDBAppRDSPollingPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  # Only requires the ability to look up DB instance details
+                  - rds:DescribeDBInstances 
+                Resource: "*"        
+
+  # Instance Profile: The container that links the role to the EC2 instance
+  RDSAppInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: EmailDBAppInstanceProfile
+      Roles: 
+        - !Ref RDFAppInstanceRole
 
 Outputs:
   WebsiteURL:
