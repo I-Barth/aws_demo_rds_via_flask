@@ -1,5 +1,7 @@
 import os
 import time
+import subprocess
+
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
@@ -9,6 +11,7 @@ DB_IDENTIFIER = "clarusway"
 AWS_REGION = "us-east-1"
 POLL_INTERVAL = 10 #seconds
 RDS_HOST = None
+
 while not RDS_HOST:
     print(f"INFO: Polling AWS CLI for endpoint of DB: {DB_IDENTIFIER}...")
     # Construct the AWS CLI command
@@ -19,6 +22,7 @@ while not RDS_HOST:
         '--region', AWS_REGION,
         '--output', 'text'
     ]
+
     try:
         # Execute the command (2>/dev/null suppresses stderr for clean output)
         result = subprocess.run(command, capture_output=True, text=True, check=False)
