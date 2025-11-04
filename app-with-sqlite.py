@@ -2,10 +2,28 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 app = Flask(__name__)
+
+# the config dictionary behaves like an ordinary dict, but allows for loading config files in addition to that.
+# so set some configuration properties needed for the DB-connection etc.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./email.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Create an SQLAlchemy instance which will read the SQLAlchemy options of "app".
+# SQLAlchemy provides a high-level abstraction layer and integration with Flask,
+#    handling the tedious details of connection pooling, session lifecycle, 
+#    and mapping database tables to Python objects.
+#    It is a ORM Mapper and allows db interaction via objects (e.g. User.query.filter_by(name='Alice').all())
+#    It is database agnostic and allows switching the underlying database with minimal changes to the code.
+# It prepares its engine which manages the connections.
+#    However, the connection is lazy and will be established only when the first query/operation is called.
+#    Apart from managing connections, it provides access to the DB-Session and handles their life-cycle
+#    It is the base class which handles any DB manipulations.
 db = SQLAlchemy(app)
 
+# app_context: Flask needs to push its context onto an internal stack for it to be active.
+#              db does not store the session directly - db.session is a proxy that accesses the session stored
+#                  in the app_context.
+#              When the app_context is not active, Flask does not have a currently active app and db.session will be empty.
 with app.app_context():
     drop_table = text('DROP TABLE IF EXISTS users;')
     users_table = text(""" 
@@ -46,7 +64,7 @@ def insert_email(name,email):
         result = db.session.execute(query)
         response = ''
         if len(name) == 0 or len(email) == 0:
-            response = 'Username or email can not be empty!!'
+            response = 'Username or email cannot be empty!!'
         elif not any(result):
             insert = text(f"""
             INSERT INTO users
@@ -57,7 +75,7 @@ def insert_email(name,email):
             response = text(f"User {name} and {email} have been added successfully")
         else:
             response = text(f"User {name} already exist")
-        return response
+        return   
 @app.route('/', methods=['GET', 'POST'])
 def emails():
     with app.app_context():
