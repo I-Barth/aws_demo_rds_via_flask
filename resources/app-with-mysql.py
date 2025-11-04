@@ -44,7 +44,7 @@ while not RDS_HOST:
 
 app = Flask(__name__)
 
-# Credentials and Database Name (hardcoded for this example)
+# Credentials and Database Name
 DB_USER = "admin"
 DB_PASS = "Clarusway_1"
 DB_NAME = "email"
