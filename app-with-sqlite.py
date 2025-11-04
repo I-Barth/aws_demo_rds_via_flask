@@ -57,25 +57,26 @@ def find_emails(keyword):
         return user_emails
 
 def insert_email(name,email):
+    if len(name) == 0 or len(email) == 0:
+        return 'Username or email cannot be empty!!'
+    
     with app.app_context():
         query = text(f"""
         SELECT * FROM users WHERE username like '{name}'
         """)
         result = db.session.execute(query)
-        response = ''
-        if len(name) == 0 or len(email) == 0:
-            response = 'Username or email cannot be empty!!'
-        elif not any(result):
+
+        if not any(result):
             insert = text(f"""
             INSERT INTO users
             VALUES ('{name}', '{email}');
             """)
             result = db.session.execute(insert)
             db.session.commit()
-            response = text(f"User {name} and {email} have been added successfully")
-        else:
-            response = text(f"User {name} already exist")
-        return   
+            return text(f"User {name} and {email} have been added successfully")
+        return text(f"User {name} already exist")
+
+
 @app.route('/', methods=['GET', 'POST'])
 def emails():
     with app.app_context():
