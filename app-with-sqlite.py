@@ -79,23 +79,21 @@ def insert_email(name,email):
 
 @app.route('/', methods=['GET', 'POST'])
 def emails():
-    with app.app_context():
-        if request.method == 'POST':
-            user_app_name = request.form['user_keyword']
-            user_emails = find_emails(user_app_name)
-            return render_template('emails.html', name_emails=user_emails, keyword=user_app_name,   show_result=True)
-        else:
-            return render_template('emails.html', show_result=False)
+    if request.method == 'POST':
+        user_app_name = request.form['user_keyword']
+        user_emails = find_emails(user_app_name)
+        return render_template('emails.html', name_emails=user_emails, keyword=user_app_name, show_result=True)
+    return render_template('emails.html', show_result=False)
+        
+
 @app.route('/add', methods=['GET', 'POST'])
 def add_email():
-    with app.app_context():
-        if request.method == 'POST':
-            user_app_name = request.form['username']
-            user_app_email = request.form['useremail']
-            result_app = insert_email(user_app_name, user_app_email)
-            return render_template('add-email.html', result_html=result_app, show_result=True)
-        else:
-            return render_template('add-email.html', show_result=False)
+    if request.method == 'POST':
+        user_app_name = request.form['username']
+        user_app_email = request.form['useremail']
+        result_app = insert_email(user_app_name, user_app_email)
+        return render_template('add-email.html', result_html=result_app, show_result=True)
+    return render_template('add-email.html', show_result=False)
 
 
 # - Add a statement to run the Flask application which can be reached from any host on port 80.
