@@ -27,6 +27,7 @@ Resources:
           mkdir -p /var/www/html
           yum update -y
           yum install git -y
+          yum install aws-cli -y
           cd /var/www/html
           git clone https://github.com/I-Barth/aws_demo_rds_via_flask.git 
           yum install -y python3 python3-pip
