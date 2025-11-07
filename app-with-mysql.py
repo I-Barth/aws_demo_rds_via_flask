@@ -51,7 +51,7 @@ app = Flask(__name__)
 # Credentials and Database Name
 DB_USER = "admin"
 DB_PASS = "Clarusway_1"
-DB_NAME = "email"
+DB_NAME = "clarusway"
 DB_PORT = 3306
 
 # Dynamic Configuration: Build the URI using the retrieved RDS_HOST
@@ -79,8 +79,8 @@ with app.app_context():
     drop_table = text('DROP TABLE IF EXISTS users;')
     users_table = text(""" 
     CREATE TABLE users(
-    username VARCHAR NOT NULL PRIMARY KEY,
-    email VARCHAR);
+    username VARCHAR(255) NOT NULL PRIMARY KEY,
+    email VARCHAR(255));
     """)
     data = text("""
     INSERT INTO users

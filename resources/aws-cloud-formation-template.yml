@@ -19,6 +19,7 @@ Resources:
       Tags: 
         - Key: Name
           Value: ec2EmailDatabase
+      IamInstanceProfile: !Ref RDSAppInstanceProfile          
       UserData: 
         Fn::Base64: |
           #!/bin/bash
@@ -43,7 +44,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: allows inbound ssh and http connections from port 8080
-      GroupName: myEmaildatabaseEc2SecGroup
+      GroupName: myEmaildatabaseEc2SecGroup2
       SecurityGroupIngress: 
         - CidrIp: 0.0.0.0/0
           FromPort: 22
@@ -62,7 +63,8 @@ Resources:
         - Key: Name
           Value: myEmaildatabaseEc2SecGroup
 
-  RDFAppInstanceRole:
+
+  RDSAppInstanceRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -87,13 +89,12 @@ Resources:
                   - rds:DescribeDBInstances 
                 Resource: "*"        
 
-  # Instance Profile: The container that links the role to the EC2 instance
+  # 3. Instance Profile: The container that links the role to the EC2 instance
   RDSAppInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: EmailDBAppInstanceProfile
       Roles: 
-        - !Ref RDFAppInstanceRole
+        - !Ref RDSAppInstanceRole
 
 Outputs:
   WebsiteURL:
